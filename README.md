@@ -15,3 +15,5 @@ It manages:
 - Lifecycle management
 
 SEH does not replace Skills. It manages Skill Packages.
+
+The current SEH Skill instructions are packaged at `packages/ai-skill-engineering-hub/` (v2.4, runtime validation pending). The repository's `VERSION` tracks the SEH software project separately.
