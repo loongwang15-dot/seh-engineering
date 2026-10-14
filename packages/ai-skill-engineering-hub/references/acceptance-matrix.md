@@ -30,9 +30,13 @@
 
 从 Skill 根目录运行入口列出的命令。`inspect` 只支持本包使用的标量 frontmatter 和可选 manifest/VERSION 一致性；完整 YAML 语法使用宿主提供的正式检查器。它还检查 Markdown 本地引用与标题锚点，拒绝逃出 Skill 根的本地引用或符号链接。
 
+支持的入口字符串为普通文字标量、单引号字符串和 JSON 兼容的双引号字符串；集合、布尔/数值/null、多行或未支持的 YAML 标记明确拒绝。存在的 VERSION 必须非空。Markdown 依赖包括内联、完整/折叠/简写引用式链接；代码围栏、行内代码、注释和未使用的引用定义不作为文件依赖。
+
 `compare` 逐文件比较完整源，输出缺失、变化和目标新增文件；新增平台文件不自动判失败，需人工确认用途。不要拿不同表达的 Adapter 做逐字节“语义验证”。
 
 `gate` 输入 JSON 记录，stdout 输出结论。exit 0 是声明范围的记录完整且证据哈希有效；1 是 BLOCKED；2 是 UNVERIFIED。它不运行目标应用、不验证证据论证、不自动给 Skill 晋级。
+
+schema_version 必须是整数 1，布尔值和浮点数不能代替它。RECOVER、SPLIT、MERGE、MIGRATE、DEPLOY 的 profile 必须为 FULL；非法组合直接 BLOCKED，不能通过 LIGHT 标签获得回归豁免。
 
 记录字段：schema_version=1、task_id、mode（入口九种之一）、profile（LIGHT/FULL）、scope（PACKAGE/BEHAVIOR/DEPLOYMENT）、checks 数组。每项有唯一 id、status（PASS/FAIL/UNVERIFIED/N/A）、reason，以及 evidence 数组。证据每条为相对于记录目录的 path、实际 sha256、kind（command/file/agent_behavior/target_app/manual）。证据文件必须在记录目录内；子代理结果先保存为文件。PASS 必须有证据；其他状态写原因。N/A 不表示通过。
 

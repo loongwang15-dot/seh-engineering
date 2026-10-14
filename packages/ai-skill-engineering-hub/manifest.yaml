@@ -1,6 +1,6 @@
 skill_id: ai-skill-engineering-hub
 name: AI Skill工程中枢
-version: 3.0.0
+version: 3.0.1
 status: unverified
 dependencies: []
 package_profile: agent-skill

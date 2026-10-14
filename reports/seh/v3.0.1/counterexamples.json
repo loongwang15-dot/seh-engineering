@@ -1,0 +1,86 @@
+{
+  "scope": "offline checker fixtures; simulated target_app labels are not real app evidence",
+  "entry_sha256": "25ba343664e80e15b903468e8341ddee6fcc57af0cd8c707837ce4cf0090b029",
+  "cases": [
+    {
+      "id": "C01-light-deployment",
+      "finding": "F-01",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "C02-missing-reference-style",
+      "finding": "F-02",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "C03-fenced-example",
+      "finding": "F-02",
+      "expected": "PASS",
+      "actual": "PASS",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "id": "C04-empty-version",
+      "finding": "F-03",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "C05-sequence-description",
+      "finding": "F-03",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "C06-boolean-schema",
+      "finding": "F-04",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "K01-valid-minimal",
+      "finding": "control",
+      "expected": "PASS",
+      "actual": "PASS",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "id": "K02-missing-inline",
+      "finding": "control",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "K03-full-deployment-regression",
+      "finding": "control",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "exit_code": 1,
+      "status": "PASS"
+    },
+    {
+      "id": "K04-integer-schema",
+      "finding": "control",
+      "expected": "PASS",
+      "actual": "PASS",
+      "exit_code": 0,
+      "status": "PASS"
+    }
+  ]
+}

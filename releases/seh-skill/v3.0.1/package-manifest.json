@@ -1,0 +1,65 @@
+{
+  "version": "3.0.1",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "4c3d6fb222dcb5c8b9928bf82083c8893e52d32a3cfe9d5df61dbec6724e8aa8"
+    },
+    {
+      "path": "manifest.yaml",
+      "sha256": "29decc30b1f77d21fd15440e3b435215d6951a761116767d51adc8bdd467b29d"
+    },
+    {
+      "path": "README.md",
+      "sha256": "3d60bee167a880068a1d208bd6da9f6a0e9b82aef1c0c54c25f7a05bd7ee5932"
+    },
+    {
+      "path": "references/acceptance-matrix.md",
+      "sha256": "84e02198c9c931a49f733f53e7a2f75d68ddd1938e8acd213dacd8ff70ca94b7"
+    },
+    {
+      "path": "references/governance.md",
+      "sha256": "b761eea57332dbbe5d114129946a73d30a16821511ecd90ef336982f81536b60"
+    },
+    {
+      "path": "references/modes-authoring.md",
+      "sha256": "3d259366a35b6aeec01842b6cf37c672a2c1672f6f6c7779b02ce49266fe7972"
+    },
+    {
+      "path": "references/modes-lifecycle.md",
+      "sha256": "9fc4dcee09342fc344df08e5dee0b0ee8559f725774edcb4ea52f852eb90334f"
+    },
+    {
+      "path": "references/modes-refactor.md",
+      "sha256": "534d15c5f9f7d1ac03c5d1966d5c9e3222e0d40b9222b6e987e4b4f484814c29"
+    },
+    {
+      "path": "references/requirement-ledger.md",
+      "sha256": "4b201b1e96bfe6b7a9970bdb0fe62598c6a852024ea063fe790ea3d17f159964"
+    },
+    {
+      "path": "references/version-history.md",
+      "sha256": "b10c343e734c456b58d9c6a5ea2d471243340125ea74f96083e75d27a1794b4a"
+    },
+    {
+      "path": "scripts/seh_checks.py",
+      "sha256": "f7202581dd87f1978099c0ec3cb1c33ed4a15b40940552c472650e980382b0f2"
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "25ba343664e80e15b903468e8341ddee6fcc57af0cd8c707837ce4cf0090b029"
+    },
+    {
+      "path": "tests/test_seh_checks.py",
+      "sha256": "b431b01d225fc1e8a33b64fc85ca5d02576605a202328e723c27e58005c67a6f"
+    },
+    {
+      "path": "VERSION",
+      "sha256": "06e3fe4a7a1884d20d81cc7065ca8cfd4c394ec602c4d180ddc39bbd4f7da521"
+    }
+  ],
+  "archive": "ai-skill-engineering-hub-v3.0.1.zip",
+  "archive_sha256": "c8d285f1065fc86774321809dfdd0f6dc1841f002d984633bdd2c1d78931109f",
+  "zip_roundtrip": "PASS",
+  "runtime_qualification": "UNVERIFIED; not inferred from archive or unit-test passes"
+}

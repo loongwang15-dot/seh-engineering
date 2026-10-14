@@ -12,5 +12,7 @@
 | 旧软件的生命周期与依赖设想 | [生命周期](specification/lifecycle.md)、[依赖管理](specification/dependency_management.md) |
 | 旧软件治理及登记设想 | [命名](governance/naming_rules.md)、[质量标准](governance/quality_standard.md)、[注册表](registry.md)、[版本](versioning.md) |
 | 原始部署说明 | [GitHub](deployment/github_deployment.md)、[GPT 加载](deployment/gpt_agent_loading.md) |
+| 当前本地安装与中断恢复 | [安装/回滚工具](deployment/local_installation.md) |
+| v3.0.1 修复验证 | [修复报告](../reports/seh/v3.0.1/README.md) |
 
 `specification/`、`governance/`、注册表、产品与部署短文来自软件 v1.0.0 原始规范，部分是设计设想，并不证明对应集成已经实现。它们保留供兼容和历史理解；**当前 SEH Skill 执行合同以包内 [SKILL.md](../packages/ai-skill-engineering-hub/SKILL.md) 及其参考文件为准**。不把旧模板的固定目录要求套到当前 Skill。

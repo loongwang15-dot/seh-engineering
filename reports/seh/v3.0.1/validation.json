@@ -1,0 +1,66 @@
+{
+  "task_id": "SEH-FIX-20261014",
+  "mode": "UPDATE + DEPLOY",
+  "profile": "FULL",
+  "version": "3.0.1",
+  "requirements": 5,
+  "covered_requirements": 5,
+  "fixed_findings": [
+    "F-01",
+    "F-02",
+    "F-03",
+    "F-04",
+    "F-05"
+  ],
+  "checker_tests": {
+    "status": "PASS",
+    "count": 39,
+    "retained_original_tests": 28
+  },
+  "installer_tests": {
+    "status": "PASS",
+    "count": 7,
+    "skipped": 0
+  },
+  "software_tests": {
+    "status": "PASS",
+    "count": 11,
+    "execution": "existing zero-argument functions; pytest not installed"
+  },
+  "original_counterexamples": {
+    "status": "PASS",
+    "count": 6
+  },
+  "controls": {
+    "status": "PASS",
+    "count": 4
+  },
+  "source_structure": {
+    "status": "PASS",
+    "files": 14,
+    "valid_links": 14,
+    "entry_sha256": "25ba343664e80e15b903468e8341ddee6fcc57af0cd8c707837ce4cf0090b029"
+  },
+  "release": {
+    "status": "PASS",
+    "files": 14,
+    "sha256": "c8d285f1065fc86774321809dfdd0f6dc1841f002d984633bdd2c1d78931109f"
+  },
+  "historical_release_unchanged": true,
+  "installer_source_hashes": {
+    "tools/install-seh.ps1": "029ddad9f3022c7932df76a043a79db39975d66e5adacc55f39256c1f372d98c",
+    "tools/rollback-seh.ps1": "95a9a698e61c091eda64c0d657b324590db2e316bb4f1c662029f433cd918f27",
+    "tools/seh-installation.psm1": "ed0a8ca96693646556900cdf9723c205158eba2cc78aac1f37cbc49955c7a826",
+    "tests/test_installation.py": "ab2543060ed28794a189584c481d14e516a79255e46952b832e4ac114bc1ce3c"
+  },
+  "package_qa": "PASS",
+  "offline_checker_regression": "PASS",
+  "isolated_installation_recovery": "PASS",
+  "behavior_qa": "UNVERIFIED",
+  "full_production_qualification": "UNVERIFIED",
+  "limitations": [
+    "No fresh full model-behavior regression or all-platform qualification.",
+    "A scoped tool/test PASS cannot certify evidence semantics or production readiness."
+  ],
+  "Scope": "Bug fixes, source/package integrity, offline checker and isolated installer recovery. Actual machine/account deployment evidence is retained locally."
+}

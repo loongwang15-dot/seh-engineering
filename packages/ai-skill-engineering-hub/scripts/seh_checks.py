@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 MODES = {"CREATE", "UPDATE", "RECOVER", "AUDIT", "SPLIT", "MERGE", "MIGRATE", "DEPLOY", "DEPRECATE"}
+FULL_ONLY_MODES = {"RECOVER", "SPLIT", "MERGE", "MIGRATE", "DEPLOY"}
 SCOPES = {
     "PACKAGE": {"structure", "fidelity"},
     "BEHAVIOR": {"structure", "fidelity", "behavior", "regression"},
@@ -29,6 +30,124 @@ def contained(root: Path, target: Path) -> bool:
 def plain_fields(text: str) -> dict[str, str]:
     """Only scalar lines used by this package; not a YAML parser."""
     return {m[1]: m[2].strip().strip('"\'') for m in re.finditer(r"^([a-z_]+):[ \t]*(.*)$", text, re.M)}
+
+
+def string_scalar(value: str) -> str | None:
+    """Accept supported YAML string scalars; reject typed or unsupported values."""
+    value = value.strip()
+    if value.startswith("'"):
+        match = re.fullmatch(r"'((?:[^']|'')*)'[ \t]*(?:#.*)?", value)
+        return match[1].replace("''", "'") if match else None
+    if value.startswith('"'):
+        try:
+            parsed, end = json.JSONDecoder().raw_decode(value)
+        except ValueError:
+            return None
+        trailing = value[end:].strip()
+        return parsed if isinstance(parsed, str) and (not trailing or trailing.startswith("#")) else None
+    value = re.sub(r"[ \t]+#.*$", "", value).rstrip()
+    if not value or value.startswith(("[", "{", "!", "&", "*", "|", ">", "#")):
+        return None
+    if value.lower() in {"true", "false", "yes", "no", "on", "off", "null", "~", ".nan", ".inf", "-.inf", "+.inf"}:
+        return None
+    if re.search(r":[ \t]", value) or re.fullmatch(r"[+-]?[0-9_]+(?::[0-9_]+)+(?:\.[0-9_]*)?", value):
+        return None
+    if re.fullmatch(r"\d{4}-\d{1,2}-\d{1,2}(?:[Tt \t]+\d{1,2}:\d{2}:\d{2}(?:\.[0-9]+)?(?:[ \t]*(?:[Zz]|[+-]\d{1,2}(?::?\d{2})?))?)?", value):
+        return None
+    if re.fullmatch(r"[+-]?(?:0[xob][0-9a-f_]+|(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:e[+-]?[0-9_]+)?)", value, re.I):
+        return None
+    return value
+
+
+def visible_markdown(text: str) -> str:
+    """Exclude frontmatter, fenced examples, comments, and inline code spans."""
+    text = re.sub(r"\A---\r?\n.*?\r?\n---(?:\r?\n|$)", "", text, count=1, flags=re.S)
+    lines, fence = [], None
+    for line in text.splitlines(keepends=True):
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line.rstrip("\r\n"))
+        if fence:
+            if marker and marker[1][0] == fence[0] and len(marker[1]) >= fence[1] and not marker[2].strip():
+                fence = None
+            lines.append("\n")
+        elif marker:
+            fence = (marker[1][0], len(marker[1]))
+            lines.append("\n")
+        else:
+            lines.append(line)
+    rendered = re.sub(r"<!--.*?(?:-->|\Z)", "", "".join(lines), flags=re.S)
+    return re.sub(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)", "", rendered, flags=re.S)
+
+
+def inline_destination(text: str, start: int) -> tuple[str, int] | None:
+    index = start
+    while index < len(text) and text[index].isspace():
+        index += 1
+    if index >= len(text):
+        return None
+    if text[index] == "<":
+        end = text.find(">", index + 1)
+        if end < 0 or "\n" in text[index:end]:
+            return None
+        target, index = text[index + 1:end], end + 1
+    else:
+        begin, depth = index, 0
+        while index < len(text):
+            char = text[index]
+            if char == "\\" and index + 1 < len(text):
+                index += 2
+                continue
+            if char.isspace() or (char == ")" and depth == 0):
+                break
+            depth += (char == "(") - (char == ")")
+            index += 1
+        if depth:
+            return None
+        target = text[begin:index]
+    while index < len(text) and text[index].isspace():
+        index += 1
+    if index < len(text) and text[index] in {'"', "'", "("}:
+        closer = ")" if text[index] == "(" else text[index]
+        index += 1
+        while index < len(text) and text[index] != closer:
+            index += 2 if text[index] == "\\" else 1
+        index += 1
+        while index < len(text) and text[index].isspace():
+            index += 1
+    if index >= len(text) or text[index] != ")":
+        return None
+    return re.sub(r"\\([\\()[\] <>])", r"\1", target), index + 1
+
+
+def markdown_links(text: str) -> list[tuple[str, str]]:
+    rendered = visible_markdown(text)
+    def normalize(label: str) -> str:
+        return " ".join(label.split()).casefold()
+    definitions = {}
+    definition = re.compile(r"(?m)^ {0,3}\[([^\]\n]+)\]:[ \t]*(<[^>\n]+>|\S+)[^\n]*(?:\n|$)")
+    for match in definition.finditer(rendered):
+        definitions.setdefault(normalize(match[1]), match[2].strip("<>"))
+    rendered = definition.sub("\n", rendered)
+    links, spans = [], []
+    for match in re.finditer(r"(?<!\\)!?\[([^\]\n]+)\]\(", rendered):
+        if spans and match.start() < spans[-1][1]:
+            continue
+        parsed = inline_destination(rendered, match.end())
+        if parsed:
+            links.append((match[1], parsed[0]))
+            spans.append((match.start(), parsed[1]))
+    for start, end in reversed(spans):
+        rendered = rendered[:start] + " " * (end - start) + rendered[end:]
+    explicit = re.compile(r"(?<!\\)!?\[([^\]\n]+)\][ \t]*(?:\n[ \t]*)?\[([^\]\n]*)\]")
+    for match in explicit.finditer(rendered):
+        target = definitions.get(normalize(match[2] or match[1]))
+        if target is not None:
+            links.append((match[1], target))
+    rendered = explicit.sub("", rendered)
+    for match in re.finditer(r"(?<!\\)!?\[([^\]\n]+)\]", rendered):
+        target = definitions.get(normalize(match[1]))
+        if target is not None:
+            links.append((match[1], target))
+    return links
 
 
 def anchors(text: str) -> set[str]:
@@ -76,10 +195,11 @@ def inspect_skill(root: Path) -> dict:
         return {"status": "FAIL", "scope": "structure", "issues": issues}
     text = entry.read_text(encoding="utf-8")
     match = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", text, re.S)
-    meta = plain_fields(match[1]) if match else {}
+    raw_meta = {m[1]: m[2].strip() for m in re.finditer(r"^([a-z_]+):[ \t]*(.*)$", match[1], re.M)} if match else {}
+    meta = {key: string_scalar(value) for key, value in raw_meta.items() if key in {"name", "description"}}
     if not match:
         issues.append("Missing frontmatter")
-    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", meta.get("name", "")) or len(meta.get("name", "")) > 64:
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", meta.get("name") or "") or len(meta.get("name") or "") > 64:
         issues.append("Invalid or missing scalar name")
     description = meta.get("description", "")
     if not description or len(description) > 1024 or description in {"|", ">"}:
@@ -94,7 +214,7 @@ def inspect_skill(root: Path) -> dict:
         if source.suffix.lower() != ".md":
             continue
         content = source.read_text(encoding="utf-8")
-        for label, target in re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content):
+        for label, target in markdown_links(content):
             target = target.strip().strip("<>")
             parsed = urlsplit(target)
             if parsed.scheme or parsed.netloc:
@@ -108,7 +228,7 @@ def inspect_skill(root: Path) -> dict:
                 issues.append(f"Invalid local reference: {relative} -> {target}")
     version_path = inventory.get("VERSION")
     version = version_path.read_text(encoding="utf-8").strip() if version_path else None
-    if version and not re.fullmatch(r"\d+\.\d+(?:\.\d+)?", version):
+    if version is not None and not re.fullmatch(r"\d+\.\d+(?:\.\d+)?", version):
         issues.append("Invalid VERSION")
     manifest = inventory.get("manifest.yaml")
     if manifest:
@@ -142,11 +262,16 @@ def gate(report: dict, root: Path) -> dict:
     failures, unknown, observed = [], [], []
     if not isinstance(report, dict):
         return {"status": "BLOCKED", "failures": ["Record must be an object"], "unverified": []}
-    if report.get("schema_version") != 1:
+    mode = report.get("mode") if isinstance(report.get("mode"), str) else None
+    profile = report.get("profile") if isinstance(report.get("profile"), str) else None
+    scope = report.get("scope") if isinstance(report.get("scope"), str) else None
+    if type(report.get("schema_version")) is not int or report.get("schema_version") != 1:
         failures.append("schema_version must be 1")
     for key, allowed in (("mode", MODES), ("profile", {"LIGHT", "FULL"}), ("scope", set(SCOPES))):
         if not isinstance(report.get(key), str) or report[key] not in allowed:
             failures.append(f"Invalid {key}")
+    if mode in FULL_ONLY_MODES and profile != "FULL":
+        failures.append("Mode requires FULL profile: " + mode)
     if not isinstance(report.get("task_id"), str) or not report["task_id"].strip():
         failures.append("task_id is required")
     checks = report.get("checks")
@@ -162,7 +287,7 @@ def gate(report: dict, root: Path) -> dict:
         if check_id in seen:
             failures.append(f"Duplicate check: {check_id}")
         seen.add(check_id)
-        if status not in {"PASS", "FAIL", "UNVERIFIED", "N/A"}:
+        if not isinstance(status, str) or status not in {"PASS", "FAIL", "UNVERIFIED", "N/A"}:
             failures.append(f"Invalid status: {check_id}")
             continue
         reason = item.get("reason")
@@ -172,9 +297,9 @@ def gate(report: dict, root: Path) -> dict:
             failures.append(f"Declared failed check: {check_id}")
         elif status == "UNVERIFIED":
             unknown.append(check_id)
-        elif status == "N/A" and check_id in SCOPES.get(report.get("scope"), set()):
-            allowed_na = (check_id == "fidelity" and report.get("mode") == "CREATE") or (
-                check_id == "regression" and (report.get("mode") in {"CREATE", "AUDIT"} or report.get("profile") == "LIGHT"))
+        elif status == "N/A" and check_id in SCOPES.get(scope, set()):
+            allowed_na = (check_id == "fidelity" and mode == "CREATE") or (
+                check_id == "regression" and (mode in {"CREATE", "AUDIT"} or profile == "LIGHT"))
             if not allowed_na:
                 failures.append(f"Required check cannot be N/A: {check_id}")
         evidence = item.get("evidence", [])
@@ -184,7 +309,7 @@ def gate(report: dict, root: Path) -> dict:
         if status == "PASS" and not evidence:
             unknown.append(f"PASS without evidence: {check_id}")
         for entry in evidence:
-            if not isinstance(entry, dict) or entry.get("kind") not in KINDS:
+            if not isinstance(entry, dict) or not isinstance(entry.get("kind"), str) or entry["kind"] not in KINDS:
                 failures.append(f"Invalid evidence kind: {check_id}")
                 continue
             path, digest = entry.get("path"), entry.get("sha256")
@@ -198,7 +323,7 @@ def gate(report: dict, root: Path) -> dict:
                 failures.append(f"Evidence hash mismatch: {check_id}/{path}")
             else:
                 observed.append({"check": check_id, "path": path, "kind": entry["kind"]})
-    for check_id in sorted(SCOPES.get(report.get("scope"), set()) - seen):
+    for check_id in sorted(SCOPES.get(scope, set()) - seen):
         failures.append(f"Missing required check: {check_id}")
     deployment = next((c for c in checks if isinstance(c, dict) and c.get("id") == "deployment"), None)
     if deployment and deployment.get("status") == "PASS":

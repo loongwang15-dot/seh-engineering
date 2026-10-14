@@ -175,6 +175,113 @@ class ChecksTest(unittest.TestCase):
         record["scope"] = "UNKNOWN"
         self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
 
+    def test_full_only_modes_cannot_claim_light_exemptions(self):
+        for mode in ("RECOVER", "SPLIT", "MERGE", "MIGRATE", "DEPLOY"):
+            for scope in ("PACKAGE", "BEHAVIOR", "DEPLOYMENT"):
+                with self.subTest(mode=mode, scope=scope):
+                    record = self.record(scope)
+                    record.update(mode=mode, profile="LIGHT")
+                    for item in record["checks"]:
+                        if item["id"] == "regression":
+                            item.update(status="N/A", reason="Claimed LIGHT exemption", evidence=[])
+                        if item["id"] == "deployment":
+                            item["evidence"][0]["kind"] = "target_app"
+                    self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
+
+    def test_required_reference_styles_detect_missing_files(self):
+        for link in ("[Required guide][Guide]", "[Guide][]", "[guide]"):
+            with self.subTest(link=link):
+                skill = self.skill("reference-" + str(len(list(self.root.glob("reference-*")))))
+                with (skill / "SKILL.md").open("a", encoding="utf-8") as stream:
+                    stream.write(link + "\n\n[GUIDE]: missing.md\n")
+                self.assertEqual(checks.inspect_skill(skill)["status"], "FAIL")
+
+    def test_reference_style_checks_anchors_and_titles(self):
+        skill = self.skill()
+        (skill / "guide.md").write_text("# Guide\n## CREATE\n", encoding="utf-8")
+        with (skill / "SKILL.md").open("a", encoding="utf-8") as stream:
+            stream.write('[Workflow][workflow]\n\n[workflow]: <guide.md#create> "Guide title"\n')
+        self.assertEqual(checks.inspect_skill(skill)["status"], "PASS")
+        (skill / "guide.md").write_text("# Other\n", encoding="utf-8")
+        self.assertEqual(checks.inspect_skill(skill)["status"], "FAIL")
+
+    def test_code_examples_and_comments_are_not_dependencies(self):
+        examples = ("```markdown\n[Example](missing.md)\n```\n",
+                    "~~~markdown\n[Example](missing.md)\n~~~\n",
+                    "````markdown\n```\n[Example](missing.md)\n```\n````\n",
+                    "Use `[Example](missing.md)` as a syntax example.\n",
+                    "<!-- [Example](missing.md) -->\n")
+        for index, example in enumerate(examples):
+            with self.subTest(example=example):
+                skill = self.skill("code-" + str(index))
+                with (skill / "SKILL.md").open("a", encoding="utf-8") as stream:
+                    stream.write(example)
+                self.assertEqual(checks.inspect_skill(skill)["status"], "PASS")
+
+    def test_unused_reference_definition_is_not_a_dependency(self):
+        skill = self.skill()
+        with (skill / "SKILL.md").open("a", encoding="utf-8") as stream:
+            stream.write("[unused]: missing.md\n")
+        self.assertEqual(checks.inspect_skill(skill)["status"], "PASS")
+
+    def test_empty_or_whitespace_version_fails(self):
+        for index, value in enumerate(("", " \n\t")):
+            with self.subTest(value=value):
+                skill = self.skill("version-" + str(index))
+                (skill / "VERSION").write_text(value, encoding="utf-8")
+                self.assertEqual(checks.inspect_skill(skill)["status"], "FAIL")
+
+    def test_non_string_or_unsupported_frontmatter_is_rejected(self):
+        values = ("[]", "{}", "true", "false", "null", "~", "42", "1.5", "!!str example", "*alias",
+                  "2026-10-14", "2026-10-14T12:30:00Z", "1:20", "Handle: requests")
+        for index, value in enumerate(values):
+            with self.subTest(value=value):
+                skill = self.skill("metadata-" + str(index))
+                (skill / "SKILL.md").write_text(
+                    "---\nname: example\ndescription: " + value + "\n---\n# Example\nDo the task.\n",
+                    encoding="utf-8")
+                self.assertEqual(checks.inspect_skill(skill)["status"], "FAIL")
+
+    def test_quoted_scalar_description_remains_valid(self):
+        for index, value in enumerate(('"[]"', "'42'", '"true"', "'Handle the user''s requests.'",
+                                       '"2026-10-14"', '"Handle: requests"')):
+            with self.subTest(value=value):
+                skill = self.skill("quoted-" + str(index))
+                (skill / "SKILL.md").write_text(
+                    "---\nname: example\ndescription: " + value + "\n---\n# Example\nDo the task.\n",
+                    encoding="utf-8")
+                self.assertEqual(checks.inspect_skill(skill)["status"], "PASS")
+
+    def test_schema_version_requires_an_integer_not_boolean_or_float(self):
+        for value in (True, False, 1.0, "1", None, [], {}):
+            with self.subTest(value=value):
+                record = self.record()
+                record["schema_version"] = value
+                self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
+
+    def test_malformed_enum_types_are_blocked_without_exceptions(self):
+        for key in ("mode", "profile", "scope"):
+            for value in ([], {}, True):
+                with self.subTest(key=key, value=value):
+                    record = self.record()
+                    record[key] = value
+                    self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
+        record = self.record()
+        record["checks"][0]["status"] = []
+        self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
+        record = self.record()
+        record["checks"][0]["evidence"][0]["kind"] = {}
+        self.assertEqual(checks.gate(record, self.root)["status"], "BLOCKED")
+
+    def test_inline_destinations_support_balanced_parentheses_and_titles(self):
+        skill = self.skill()
+        (skill / "guide(one).md").write_text("# Guide\n", encoding="utf-8")
+        with (skill / "SKILL.md").open("a", encoding="utf-8") as stream:
+            stream.write('[Guide](guide(one).md "Workflow title")\n')
+        self.assertEqual(checks.inspect_skill(skill)["status"], "PASS")
+        (skill / "guide(one).md").unlink()
+        self.assertEqual(checks.inspect_skill(skill)["status"], "FAIL")
+
     def test_cli_pass_and_unverified_exit_codes(self):
         record = self.record()
         file = self.root / "qa.json"
