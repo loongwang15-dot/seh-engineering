@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-14",
+  "skill_version": "3.0.0",
+  "public_scope": "Five reviewed report/mapping files; raw local evidence is not published",
+  "source_skill_unchanged": true,
+  "original_evidence_preserved_locally": true,
+  "raw_evidence_published": false,
+  "machine_absolute_paths_published": false,
+  "files": [
+    {
+      "local_origin": "delivery/seh-v3.0.0/验收报告.md",
+      "published": "optimization/验收报告.md",
+      "original_sha256": "e56b4e65c5f9c9ca4b845798f1e3aa7d4a84ce3a3edf7cbd832fed9f4d6ddf29",
+      "published_sha256": "ad129dffd1858511c8bf93804cbf4df0bf78d10cbe518fc735f74cb15067e367",
+      "transformation": "Machine paths replaced; public-copy notice added; original judgments retained"
+    },
+    {
+      "local_origin": "delivery/seh-v3.0.0/需求与变更.md",
+      "published": "optimization/需求与变更.md",
+      "original_sha256": "2a94429db29f297ed3c871c5aac6e42923e20a98f4801422115e552cc04bdbe8",
+      "published_sha256": "189bc4d12ae20c98ac15d8718ba09e7ba2b0eeddf624b5b8d8ceb8d4159bcddd",
+      "transformation": "Machine paths replaced; public-copy notice added; original judgments retained"
+    },
+    {
+      "local_origin": "delivery/seh-v3.0.0/行为复核.md",
+      "published": "optimization/行为复核.md",
+      "original_sha256": "634098530687a7682dc88ea88f2d1041db28ca61059b994ba57b58b55e260a60",
+      "published_sha256": "05bd3c0a2604ee3f6ff332bc9fbebec5e9b164c1a241e777ed7c0827af695867",
+      "transformation": "Machine paths replaced; public-copy notice added; original judgments retained"
+    },
+    {
+      "local_origin": "delivery/seh-v3.0.0/capability-map.json",
+      "published": "optimization/capability-map.json",
+      "original_sha256": "25407fd6bab38a552f69fcc62a3368dd85d372cdf3ace605dea2bdea3218e609",
+      "published_sha256": "25407fd6bab38a552f69fcc62a3368dd85d372cdf3ace605dea2bdea3218e609",
+      "transformation": "No content redaction needed; byte-identical capability map"
+    },
+    {
+      "local_origin": "delivery/seh-v3.0.0-audit-20261013/SEH系统审核报告.md",
+      "published": "audit/SEH系统审核报告.md",
+      "original_sha256": "03cc866f92ef26c857761f19dd78ff199a71ac1b5c727f895efe19f574f0fa7e",
+      "published_sha256": "30542aaa0228bff1725e4faf8f00d7c545f1ae5aaf1191a59ddd80dc1d899921",
+      "transformation": "Machine paths replaced; public-copy notice added; original judgments retained"
+    }
+  ],
+  "local_only": [
+    "Original audit inputs and command outputs",
+    "Full behavior-test artifacts and observations",
+    "CLI session event/stderr streams",
+    "Local installation state and rollback attachments",
+    "Original installed-v2.4 backup",
+    "Unrelated project assets and installers"
+  ]
+}

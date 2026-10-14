@@ -1,5 +1,7 @@
 skill_id: ai-skill-engineering-hub
 name: AI Skill工程中枢
-version: 2.4
+version: 3.0.0
 status: unverified
 dependencies: []
+package_profile: agent-skill
+optional_runtime: Python 3.10+ standard library

@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-14",
+  "baseline_commit": "13926504b0f2fcdbf0b8803770fdfd27a23d1fd7",
+  "mode": "repository organization",
+  "moved_files": 23,
+  "all_moves_byte_identical": true,
+  "moves": [
+    {
+      "from": "PRODUCT.md",
+      "to": "docs/product.md",
+      "sha256": "578a5a135c3f6063dd393b5adeb52291bed9d8b088b0d5fa071eeca6a53e98e2"
+    },
+    {
+      "from": "HANDOFF.md",
+      "to": "docs/handoff.md",
+      "sha256": "e3eed81bb46d1531692d294d06e645d774f76d9d06282809057971bba40efb68"
+    },
+    {
+      "from": "core/dependency_management.md",
+      "to": "docs/specification/dependency_management.md",
+      "sha256": "08ecbd452b4d7ff33d18d5489c562f47285947e6297ad9cbe943ac9ba02c32e1"
+    },
+    {
+      "from": "core/lifecycle.md",
+      "to": "docs/specification/lifecycle.md",
+      "sha256": "d042edd65ad6640fa8e0cde2f1b0bf75f906742fd479383c2a6d0d3ac76c6b67"
+    },
+    {
+      "from": "core/manifest_schema.yaml",
+      "to": "docs/specification/manifest_schema.yaml",
+      "sha256": "a5a17be6ccbd10ec7128fcbc8a0c00dadc289d85b447e3b977d3805b455a33cf"
+    },
+    {
+      "from": "core/skill_standard.md",
+      "to": "docs/specification/skill_standard.md",
+      "sha256": "0d1122756515834c838ac349f7e01feab13f25b0d507c1ba890d52f07161c3b3"
+    },
+    {
+      "from": "core/validation_system.md",
+      "to": "docs/specification/validation_system.md",
+      "sha256": "02cbe3ca5971f08a9bb3b348cba1ebbffca0cb9df3daadcd23a1da5a1fbdf5f5"
+    },
+    {
+      "from": "deployment/github_deployment.md",
+      "to": "docs/deployment/github_deployment.md",
+      "sha256": "455c12951601c3ca44fb01f73e3d885b0f7fcc7f0de14241033a9937e8d2fa7e"
+    },
+    {
+      "from": "deployment/gpt_agent_loading.md",
+      "to": "docs/deployment/gpt_agent_loading.md",
+      "sha256": "04026830f9fe4ebcab01dce9033d12167a51c8d746e48f0149d4ded35ced4483"
+    },
+    {
+      "from": "governance/naming_rules.md",
+      "to": "docs/governance/naming_rules.md",
+      "sha256": "cf8a84274856855fd1c0b70fe20922a64ab66daf66cb109f0c847a26e4a2d32c"
+    },
+    {
+      "from": "governance/quality_standard.md",
+      "to": "docs/governance/quality_standard.md",
+      "sha256": "4818e6f4340d6b588a26f1f630118bea9b30ebf58b4e0d6ee0fed933f30bcc39"
+    },
+    {
+      "from": "registry/registry_rules.md",
+      "to": "docs/registry.md",
+      "sha256": "daf1b9482d7dfbf350d5b461b2f72b9bc340db1a52205e4831583bb01d8e6804"
+    },
+    {
+      "from": "versioning/version_rules.md",
+      "to": "docs/versioning.md",
+      "sha256": "fc4573497ca2e8ed15ec199d23aa21a8d2fb115b03b345447a54687319491633"
+    },
+    {
+      "from": "packages/_template_skill/CHANGELOG.md",
+      "to": "templates/legacy-skill/CHANGELOG.md",
+      "sha256": "503c14b194231f18af94ee104ca89d5b4c16015e7b7d36b9b8dcf60b83dfceaa"
+    },
+    {
+      "from": "packages/_template_skill/manifest.yaml",
+      "to": "templates/legacy-skill/manifest.yaml",
+      "sha256": "457e82e09a283107b3637fa7e7fe9e02052fe0fc1e29f5a1662d385769a3972c"
+    },
+    {
+      "from": "packages/_template_skill/README.md",
+      "to": "templates/legacy-skill/README.md",
+      "sha256": "cc34b55ce0e5d5cc16a44125b341eb00c86f83a822b126d1c8ef7f079161bea2"
+    },
+    {
+      "from": "packages/_template_skill/SKILL.md",
+      "to": "templates/legacy-skill/SKILL.md",
+      "sha256": "cc54f0e33990da5f804da6deca0edf0738bf42f5ddc289b0fa01dbe1cf2df65d"
+    },
+    {
+      "from": "packages/_template_skill/VERSION",
+      "to": "templates/legacy-skill/VERSION",
+      "sha256": "4ca8bbd3c595ee306226c6996b32b8d47a900217c55a7ed0cfc868ee444f34f1"
+    },
+    {
+      "from": "packages/_template_skill/examples/README.md",
+      "to": "templates/legacy-skill/examples/README.md",
+      "sha256": "b9374960051055df5fedb40ba03123c5da28ee5fbf2cc7080d04e8f606b53ddd"
+    },
+    {
+      "from": "packages/_template_skill/knowledge/README.md",
+      "to": "templates/legacy-skill/knowledge/README.md",
+      "sha256": "f472de9e426fa8a10acfd32f5f4f93babaeab6496a981d06747c6a551583032f"
+    },
+    {
+      "from": "packages/_template_skill/tests/README.md",
+      "to": "templates/legacy-skill/tests/README.md",
+      "sha256": "b70e67972cd2b93702e6c7208de2b4e7985cb2f4018fdca5fab56a5a64bd9b99"
+    },
+    {
+      "from": "packages/_template_skill/workflow/README.md",
+      "to": "templates/legacy-skill/workflow/README.md",
+      "sha256": "f95429fcfb88eb8aa131b488bd46167023539f4cd23e3f218af6994bb8f4a398"
+    },
+    {
+      "from": "archives/ip-design-os-lovart-v1.4.4-preanalyzed-execution.zip",
+      "to": "archives/other-skills/ip-design-os-lovart-v1.4.4-preanalyzed-execution.zip",
+      "sha256": "b08139c976adf0ed64dc43397e0f00445392b400428d6cd9410116ab51883e79"
+    }
+  ],
+  "original_delivery_preserved": true,
+  "unrelated_local_projects_preserved": true
+}

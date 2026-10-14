@@ -1,0 +1,5 @@
+# Preserve audited Skill, evidence, and archive bytes across checkouts.
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Historical hard breaks and intentional whitespace probes are immutable.
+archives/** -whitespace
+reports/** -whitespace

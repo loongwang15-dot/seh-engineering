@@ -3,3 +3,30 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Local deliveries, installation work, and independent repositories.
+/delivery/
+/docker-install/
+/repository-sync/
+/archives/seh-skill/installed-v2.4-before-20261013/
+/.local/
+/apple-concept-check.js
+/apple-workbench.css
+/update-apple-concept.py
+
+# Design projects share this workspace but are not part of SEH.
+/packages/architecture-vector-design/
+/packages/graphic-poster-design/
+/packages/ip-design-os-unified-20261011/
+/packages/ip-design-os-unified-v0230-20261011/
+
+# Common local configuration and generated development files.
+/.venv/
+/.env
+/.env.*
+!.env.example
+/.vscode/
+/.idea/
+*.log
+*.tmp
+*.bak

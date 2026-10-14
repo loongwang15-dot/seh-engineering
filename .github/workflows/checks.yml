@@ -1,0 +1,21 @@
+name: SEH baseline checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install pytest
+      - name: Software tests
+        run: python -m pytest tests -q
+      - name: Skill helper tests
+        run: python -m unittest discover -s packages/ai-skill-engineering-hub/tests -p 'test_*.py' -v
+      - name: Current source structure
+        run: python packages/ai-skill-engineering-hub/scripts/seh_checks.py inspect packages/ai-skill-engineering-hub
